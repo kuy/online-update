@@ -17,7 +17,9 @@ class OnlineUpdater:
     def update(self):
         result = self.__download()
         if result == Downloader.RESULT_DOWNLOADED:
-            self.__unpack()
+            result = self.__unpack()
+            if result == Extractor.RESULT_ERROR:
+                os.remove(self.recipeFile)
             os.remove(self.downloadFile)
         return result
 
@@ -33,7 +35,7 @@ class OnlineUpdater:
     def __unpack(self):
         extractor = Extractor(self.downloadFile, self.unpackDir,
                 self.recipeFile)
-        extractor.extractAll()
+        return extractor.extractAll()
 
     @staticmethod
     def __getModifiedTime(path):

@@ -224,6 +224,9 @@ class RawExtractor:
 
 class Extractor:
 
+    RESULT_EXTRACTED = 1
+    RESULT_ERROR     = 3
+
     def __init__(self, zip, unpackDir, optimizeFile):
         self.zip = zip
         self.unpackDir = unpackDir
@@ -246,11 +249,15 @@ class Extractor:
                 extractor = RawExtractor(self.unpackDir, zipFile)
                 for op in optimizer.operations():
                     extractor.extract(op)
+            except IOError:
+                return Extractor.RESULT_ERROR
             finally:
                 zipFile.close()
+            
         finally:
             optimizer.close()
         logger.info('extract completed.')
+        return Extractor.RESULT_EXTRACTED
 
     @staticmethod
     def __isFile(zipInfo):
